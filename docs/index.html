@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Procesador de Liquidaciones Tasy</title>
-  <meta name="description" content="Procesá facturas PDF AFIP y exportá al Excel Tasy. Procesamiento local en tu navegador: tus archivos no se envían a ningún servidor." />
+  <title>Tasy</title>
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="description" content="Herramienta privada de uso interno." />
   <link rel="icon" href="assets/copybook.png" type="image/png" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -355,9 +356,105 @@
     .toast.error { background: #450a0a; color: #fca5a5; border: 1px solid #f87171; }
     .toast.warn { background: #422006; color: #fcd34d; border: 1px solid #f59e0b; }
     .toast.info { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+
+    body.locked .app,
+    body.locked .toast {
+      visibility: hidden;
+    }
+
+    .access-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: linear-gradient(145deg, #0d1118 0%, #1a2030 50%, #0d1118 100%);
+    }
+
+    .access-gate[hidden] { display: none; }
+
+    .access-card {
+      width: min(100%, 380px);
+      padding: 32px 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    .access-card img {
+      width: 52px;
+      height: 52px;
+      margin-bottom: 14px;
+    }
+
+    .access-card h2 {
+      font-size: 1.2rem;
+      margin-bottom: 6px;
+    }
+
+    .access-card p {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 22px;
+    }
+
+    .access-card input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #181e2b;
+      color: var(--text);
+      font-size: 1rem;
+      text-align: center;
+      letter-spacing: 0.15em;
+      margin-bottom: 12px;
+    }
+
+    .access-card input:focus {
+      outline: none;
+      border-color: var(--success);
+    }
+
+    .access-card button {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      background: var(--success);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .access-card button:hover { background: var(--success-hover); }
+
+    .access-error {
+      min-height: 1.2em;
+      margin-top: 10px;
+      font-size: 0.82rem;
+      color: var(--danger);
+    }
   </style>
 </head>
-<body>
+<body class="locked">
+  <div class="access-gate" id="access-gate">
+    <div class="access-card">
+      <img src="assets/copybook.png" alt="" width="52" height="52" />
+      <h2>Acceso privado</h2>
+      <p>Ingresá tu clave para continuar.</p>
+      <form id="access-form">
+        <input id="access-pin" type="password" inputmode="numeric" autocomplete="off" placeholder="Clave de acceso" />
+        <button type="submit">Entrar</button>
+      </form>
+      <p class="access-error" id="access-error"></p>
+    </div>
+  </div>
+
   <div class="app">
     <header>
       <img src="assets/copybook.png" alt="" width="56" height="56" />
@@ -390,10 +487,6 @@
           </div>
         </article>
       </div>
-      <p class="trust-footer">
-        Herramienta de código abierto —
-        <a href="https://github.com/FelixAyram/procesador-liquidaciones-tasy" target="_blank" rel="noopener">ver código en GitHub</a>
-      </p>
     </section>
 
     <div class="layout">
@@ -441,6 +534,6 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script type="module" src="js/main.js?v=5"></script>
+  <script type="module" src="js/bootstrap.js?v=1"></script>
 </body>
 </html>
