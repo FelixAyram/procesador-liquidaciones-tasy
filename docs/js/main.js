@@ -1,4 +1,4 @@
-import { readPdfText, extractInvoiceData } from "./pdf-parser.js";
+import { readPdfText, extractInvoiceData } from "./pdf-parser.js?v=3";
 import { writeRowsToExcel } from "./excel-export.js";
 import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/build/pdf.mjs";
 import ExcelJS from "https://cdn.jsdelivr.net/npm/exceljs@4.4.0/+esm";

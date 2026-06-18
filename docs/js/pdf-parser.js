@@ -1,6 +1,7 @@
 /** Lectura y extracción de datos de facturas PDF (AFIP) — versión navegador. */
 
 const Y_TOLERANCE = 5;
+const DATE_RE = /(\d{2}\/\d{2}\/\d{4})/;
 
 export function parseAmount(value) {
   if (!value) return 0.0;
@@ -25,22 +26,28 @@ export function normalizeAfipText(text) {
   return text
     .replace(/Comp\.\s*\n\s*Nro:/gi, "Comp. Nro:")
     .replace(/Punto de Venta:\s*\n\s*/gi, "Punto de Venta: ")
-    .replace(/Raz[oó]n Social:\s*\n\s*/gi, "Razón Social: ")
-    .replace(/Fecha de Emisi[oó]n:\s*\n\s*/gi, "Fecha de Emisión: ");
+    .replace(/Raz[oó]n Social:\s*\n\s*/gi, "Razón Social: ");
+}
+
+function cleanPersonName(name) {
+  return name
+    .replace(/\s+Fecha de Emisi[oó]n:.*$/i, "")
+    .replace(/\s+\d{2}\/\d{2}\/\d{4}\s*$/, "")
+    .trim();
 }
 
 function extractRazonSocial(text) {
   let match = text.match(
     /Raz[oó]n Social:\s*(.+?)(?:\s+Fecha de Emisi[oó]n:)/is
   );
-  if (match) return match[1].trim();
+  if (match) return cleanPersonName(match[1]);
 
   match = text.match(/Raz[oó]n Social:\s*([^\n]+)/i);
-  if (match) return match[1].trim();
+  if (match) return cleanPersonName(match[1]);
 
   match = text.match(/FACTURA\s*\n\s*([A-ZÁÉÍÓÚÑ][^\n]+)/i);
   if (match) {
-    const name = match[1].trim();
+    const name = cleanPersonName(match[1].trim());
     if (!/^(COD\.|Punto de Venta:)/i.test(name)) return name;
   }
 
@@ -48,23 +55,52 @@ function extractRazonSocial(text) {
 }
 
 function extractIssuerCuit(text) {
-  let match = text.match(/Domicilio Comercial:.*?CUIT:\s*(\d{11})/is);
+  // CUIT en la línea siguiente a Razón Social (layout pdf.js)
+  let match = text.match(/Raz[oó]n Social:[^\n]*\n\s*CUIT:\s*(\d{11})/i);
   if (match) return match[1];
 
-  match = text.match(/Raz[oó]n Social:[^\n]*\n\s*CUIT:\s*(\d{11})/i);
-  if (match) return match[1];
-
+  // Primer CUIT del encabezado del emisor (antes del bloque cliente)
   const headerEnd = text.search(/Per[ií]odo Facturado Desde/i);
   const top = headerEnd > 0 ? text.slice(0, headerEnd) : text;
   match = top.match(/CUIT:\s*(\d{11})/i);
+  if (match) return match[1];
+
+  // CUIT en la misma línea que Domicilio Comercial del emisor
+  match = text.match(/Domicilio Comercial:[^\n]*CUIT:\s*(\d{11})/i);
   return match ? match[1] : "";
 }
 
-function extractLetra(text) {
-  if (/\nA\s*\n\s*FACTURA/is.test(text) || /\bA\s+FACTURA\b/i.test(text)) return "A";
-  if (/\nB\s*\n\s*FACTURA/is.test(text) || /\bB\s+FACTURA\b/i.test(text)) return "B";
-  if (/\nC\s*\n\s*FACTURA/is.test(text) || /\bC\s+FACTURA\b/i.test(text)) return "C";
-  return "";
+function extractFechaEmision(text, rawNameLine) {
+  let match = text.match(/Fecha de Emisi[oó]n:\s*(\d{2}\/\d{2}\/\d{4})/i);
+  if (match) return match[1];
+
+  if (rawNameLine) {
+    match = rawNameLine.match(DATE_RE);
+    if (match) return match[1];
+  }
+
+  match = text.match(/Punto de Venta:[^\n]{0,120}(\d{2}\/\d{2}\/\d{4})/i);
+  if (match) return match[1];
+
+  const headerEnd = text.search(/Per[ií]odo Facturado Desde/i);
+  const top = headerEnd > 0 ? text.slice(0, headerEnd) : text.slice(0, 1200);
+  match = top.match(/(\d{2}\/\d{2}\/\d{4})/);
+  return match ? match[1] : "";
+}
+
+function extractLetra(text, cpte) {
+  const patterns = [
+    /\b(A|B|C)\s+FACTURA\b/i,
+    /(?:^|\n)\s*(A|B|C)\s*\n\s*FACTURA/im,
+    /FACTURA\s+(A|B|C)\b/i,
+  ];
+  for (const pattern of patterns) {
+    const m = text.match(pattern);
+    if (m) return m[1].toUpperCase();
+  }
+
+  const codMap = { "01": "A", "06": "B", "11": "C" };
+  return codMap[cpte] || "";
 }
 
 function extractPuntoNro(text) {
@@ -114,8 +150,10 @@ export async function readPdfText(arrayBuffer, pdfjsLib) {
 }
 
 export function extractInvoiceData(rawText) {
-  let text = normalizeAfipText(extractFirstInvoiceText(rawText));
+  const text = normalizeAfipText(extractFirstInvoiceText(rawText));
   const data = {};
+
+  const rawNameLine = (text.match(/Raz[oó]n Social:\s*([^\n]+)/i) || [])[1] || "";
 
   data["a y n"] = extractRazonSocial(text);
   data.cuit = extractIssuerCuit(text);
@@ -157,8 +195,7 @@ export function extractInvoiceData(rawText) {
   match = text.match(/Importe Total:\s*\$?\s*([\d.,]+)/i);
   data.total = match ? parseAmount(match[1]) : 0.0;
 
-  match = text.match(/Fecha de Emisi[oó]n:\s*(\d{2}\/\d{2}\/\d{4})/i);
-  data.fecha = match ? match[1] : "";
+  data.fecha = extractFechaEmision(text, rawNameLine);
 
   match = text.match(/Fecha de Vto\. para el pago:\s*(\d{2}\/\d{2}\/\d{4})/i);
   data["fecha pago"] = match ? match[1] : "";
@@ -191,7 +228,7 @@ export function extractInvoiceData(rawText) {
   );
   data.sigla_clinica = match ? match[1].trim() : "";
 
-  data.letra = extractLetra(text);
+  data.letra = extractLetra(text, data.cpte);
 
   data.strad = "";
   data[0] = 0.0;
