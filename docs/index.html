@@ -57,39 +57,99 @@
       font-size: 0.95rem;
     }
 
-    .privacy {
-      margin: 16px auto 24px;
-      max-width: 640px;
-      padding: 16px 18px;
-      background: rgba(34, 165, 91, 0.08);
-      border: 1px solid rgba(34, 165, 91, 0.28);
-      border-radius: 12px;
-      font-size: 0.84rem;
-      color: #cbd5e1;
-      line-height: 1.55;
+    .trust {
+      margin: 20px 0 28px;
+      padding: 18px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
     }
 
-    .privacy strong {
-      display: block;
+    .trust-title {
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .trust-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    @media (min-width: 640px) {
+      .trust-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      background: #181e2b;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      min-height: 100%;
+    }
+
+    .trust-icon {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: rgba(34, 165, 91, 0.14);
       color: #3dd68c;
       font-size: 0.9rem;
-      margin-bottom: 8px;
+      line-height: 1;
     }
 
-    .privacy ul {
-      margin: 0;
-      padding-left: 18px;
+    .trust-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
     }
 
-    .privacy li { margin-bottom: 4px; }
+    .trust-text strong {
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.35;
+    }
 
-    .privacy a {
-      color: #8b95a8;
+    .trust-text span {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .trust-footer {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .trust-footer a {
+      color: #3dd68c;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .trust-footer a:hover {
       text-decoration: underline;
       text-underline-offset: 2px;
     }
-
-    .privacy a:hover { color: #cbd5e1; }
 
     .layout {
       display: grid;
@@ -305,14 +365,36 @@
       <p>Extraé datos de facturas AFIP y generá el Excel para Tasy, directo desde el navegador.</p>
     </header>
 
-    <div class="privacy">
-      <strong>Privacidad y funcionamiento</strong>
-      <ul>
-        <li>Tus PDF y tu plantilla Excel se procesan <strong>solo en tu dispositivo</strong>.</li>
-        <li><strong>No se suben</strong> a servidores ni se guardan en la nube.</li>
-        <li>El resultado se descarga en tu PC; podés revisar el <a href="https://github.com/FelixAyram/procesador-liquidaciones-tasy" target="_blank" rel="noopener">código fuente</a> en GitHub.</li>
-      </ul>
-    </div>
+    <section class="trust" aria-label="Privacidad y funcionamiento">
+      <p class="trust-title">Privacidad y funcionamiento</p>
+      <div class="trust-grid">
+        <article class="trust-item">
+          <span class="trust-icon" aria-hidden="true">🖥️</span>
+          <div class="trust-text">
+            <strong>Procesamiento local</strong>
+            <span>Tus PDF y Excel se leen solo en tu navegador.</span>
+          </div>
+        </article>
+        <article class="trust-item">
+          <span class="trust-icon" aria-hidden="true">🔒</span>
+          <div class="trust-text">
+            <strong>Sin subida de archivos</strong>
+            <span>Nada se envía a servidores ni se guarda en la nube.</span>
+          </div>
+        </article>
+        <article class="trust-item">
+          <span class="trust-icon" aria-hidden="true">⬇️</span>
+          <div class="trust-text">
+            <strong>Descarga directa</strong>
+            <span>El Excel generado se guarda en tu computadora.</span>
+          </div>
+        </article>
+      </div>
+      <p class="trust-footer">
+        Herramienta de código abierto —
+        <a href="https://github.com/FelixAyram/procesador-liquidaciones-tasy" target="_blank" rel="noopener">ver código en GitHub</a>
+      </p>
+    </section>
 
     <div class="layout">
       <aside class="panel">
@@ -359,6 +441,6 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script type="module" src="js/main.js?v=4"></script>
+  <script type="module" src="js/main.js?v=5"></script>
 </body>
 </html>
