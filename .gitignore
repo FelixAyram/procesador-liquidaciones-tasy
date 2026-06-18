@@ -1,0 +1,9 @@
+.venv/
+.venv-linux/
+__pycache__/
+*.py[cod]
+build/
+dist/
+dist-linux/
+*.spec.bak
+descarga.html

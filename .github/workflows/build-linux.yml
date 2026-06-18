@@ -1,0 +1,32 @@
+# Compila el ejecutable Linux en la nube (sin WSL).
+# Subí el proyecto a GitHub y el .exe/binario queda en Actions → Artifacts.
+name: Build Linux
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias del sistema
+        run: sudo apt-get update && sudo apt-get install -y python3-tk
+
+      - name: Instalar Python packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+
+      - name: Compilar
+        run: pyinstaller --noconfirm --clean ProcesadorLiquidacionesTasy-linux.spec
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ProcesadorLiquidacionesTasy-Linux
+          path: dist/ProcesadorLiquidacionesTasy
