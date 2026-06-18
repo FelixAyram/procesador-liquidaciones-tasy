@@ -4,256 +4,337 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Procesador de Liquidaciones Tasy</title>
-  <meta name="description" content="Procesá facturas PDF de AFIP y exportá los datos al Excel Tasy. Disponible para Windows y Linux." />
+  <meta name="description" content="Procesá facturas PDF AFIP y exportá al Excel Tasy. Todo en tu navegador, sin servidor." />
   <link rel="icon" href="assets/copybook.png" type="image/png" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d1118;
+      --surface: #222836;
+      --surface-hover: #2a3142;
+      --border: #3a4256;
+      --text: #f1f5f9;
+      --muted: #8b95a8;
+      --success: #22a55b;
+      --success-hover: #1d8f4e;
+      --danger: #f87171;
+      --header-excel: #1E1B4B;
+    }
 
     body {
       min-height: 100vh;
       font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
       background: linear-gradient(145deg, #0d1118 0%, #1a2030 50%, #0d1118 100%);
-      color: #f1f5f9;
-      line-height: 1.6;
+      color: var(--text);
+      line-height: 1.5;
     }
 
-    .wrap {
-      max-width: 720px;
+    .app {
+      max-width: 980px;
       margin: 0 auto;
-      padding: 48px 24px 64px;
+      padding: 28px 20px 40px;
     }
 
-    .hero {
+    header {
       text-align: center;
-      margin-bottom: 40px;
-    }
-
-    .hero img {
-      width: 72px;
-      height: 72px;
-      margin-bottom: 16px;
-      filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.4));
-    }
-
-    .hero h1 {
-      font-size: clamp(1.5rem, 4vw, 2rem);
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-
-    .hero p {
-      color: #8b95a8;
-      font-size: 1.05rem;
-      max-width: 520px;
-      margin: 0 auto;
-    }
-
-    .features {
-      display: grid;
-      gap: 12px;
-      margin-bottom: 36px;
-    }
-
-    .feature {
-      background: #222836;
-      border: 1px solid #3a4256;
-      border-radius: 12px;
-      padding: 16px 20px;
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-    }
-
-    .feature span {
-      font-size: 1.25rem;
-      line-height: 1.2;
-    }
-
-    .feature strong {
-      display: block;
-      font-size: 0.95rem;
-      margin-bottom: 2px;
-    }
-
-    .feature small {
-      color: #8b95a8;
-      font-size: 0.85rem;
-    }
-
-    .downloads {
-      display: grid;
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-
-    @media (min-width: 560px) {
-      .downloads { grid-template-columns: 1fr 1fr; }
-    }
-
-    .card {
-      background: #222836;
-      border: 1px solid #3a4256;
-      border-radius: 18px;
-      padding: 28px 24px;
-      text-align: center;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-    }
-
-    .card h2 {
-      font-size: 1.1rem;
-      margin-bottom: 8px;
-    }
-
-    .card p {
-      color: #8b95a8;
-      font-size: 0.9rem;
       margin-bottom: 20px;
-      min-height: 2.8em;
     }
 
-    .btn {
-      display: inline-block;
-      width: 100%;
-      padding: 13px 20px;
-      background: #22a55b;
-      color: #fff;
-      text-decoration: none;
-      font-weight: 700;
+    header img {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 10px;
+    }
+
+    header h1 {
+      font-size: clamp(1.25rem, 3vw, 1.65rem);
+      margin-bottom: 6px;
+    }
+
+    header p {
+      color: var(--muted);
       font-size: 0.95rem;
-      border-radius: 14px;
-      transition: background 0.15s, transform 0.1s;
     }
 
-    .btn:hover {
-      background: #1d8f4e;
-      transform: translateY(-1px);
-    }
-
-    .btn.secondary {
-      background: #334155;
-    }
-
-    .btn.secondary:hover {
-      background: #475569;
-    }
-
-    .steps {
-      background: #181e2b;
-      border: 1px solid #3a4256;
-      border-radius: 14px;
-      padding: 20px 24px;
-      margin-bottom: 32px;
-    }
-
-    .steps h3 {
-      font-size: 0.95rem;
-      margin-bottom: 12px;
-      color: #cbd5e1;
-    }
-
-    .steps ol {
-      margin-left: 20px;
-      color: #8b95a8;
-      font-size: 0.88rem;
-    }
-
-    .steps li { margin-bottom: 6px; }
-
-    .steps code {
-      background: #0d1118;
-      padding: 2px 7px;
-      border-radius: 6px;
-      font-size: 0.82rem;
+    .privacy {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 16px auto 24px;
+      max-width: 560px;
+      padding: 10px 16px;
+      background: rgba(34, 165, 91, 0.12);
+      border: 1px solid rgba(34, 165, 91, 0.35);
+      border-radius: 12px;
+      font-size: 0.85rem;
       color: #3dd68c;
     }
 
-    .note {
+    .layout {
+      display: grid;
+      gap: 16px;
+    }
+
+    @media (min-width: 760px) {
+      .layout {
+        grid-template-columns: 320px 1fr;
+        align-items: start;
+      }
+    }
+
+    .panel {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .card h2 {
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .picker {
+      display: block;
+      width: 100%;
+      padding: 28px 16px;
+      border: 2px dashed var(--border);
+      border-radius: 14px;
       text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .picker:hover, .picker.dragover {
+      border-color: var(--success);
+      background: rgba(34, 165, 91, 0.06);
+      color: var(--text);
+    }
+
+    .picker strong {
+      display: block;
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .picker input { display: none; }
+
+    .picker.solid {
+      border-style: solid;
+      padding: 18px 16px;
+    }
+
+    .excel-name {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      word-break: break-all;
+      min-height: 1.2em;
+    }
+
+    .list-card {
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .list-header h2 { margin: 0; }
+
+    #pdf-count {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    #pdf-list {
+      list-style: none;
+      flex: 1;
+      overflow-y: auto;
+      max-height: 360px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #181e2b;
+    }
+
+    #pdf-list .empty {
+      padding: 32px 16px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .pdf-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pdf-item:last-child { border-bottom: none; }
+
+    .pdf-name {
+      flex: 1;
+      font-size: 0.88rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .remove-btn {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(248, 113, 113, 0.15);
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .remove-btn:hover { background: rgba(248, 113, 113, 0.3); }
+
+    .process-btn {
+      width: 100%;
+      padding: 16px 24px;
+      border: none;
+      border-radius: 14px;
+      background: var(--success);
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+    }
+
+    .process-btn:hover:not(:disabled) { background: var(--success-hover); }
+
+    .process-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
       font-size: 0.82rem;
-      color: #64748b;
-      margin-top: 12px;
+      color: var(--muted);
     }
 
-    .footer {
-      text-align: center;
-      font-size: 0.78rem;
-      color: #4a5568;
-      padding-top: 8px;
-    }
-
-    .footer a {
-      color: #64748b;
+    footer a {
+      color: var(--muted);
       text-decoration: none;
     }
 
-    .footer a:hover { color: #8b95a8; }
+    footer a:hover { color: var(--text); }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      opacity: 0;
+      transition: transform 0.25s, opacity 0.25s;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      max-width: min(90vw, 480px);
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .toast.visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success { background: #14532d; color: #3dd68c; border: 1px solid #22a55b; }
+    .toast.error { background: #450a0a; color: #fca5a5; border: 1px solid #f87171; }
+    .toast.warn { background: #422006; color: #fcd34d; border: 1px solid #f59e0b; }
+    .toast.info { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header class="hero">
-      <img src="assets/copybook.png" alt="Icono" width="72" height="72" />
+  <div class="app">
+    <header>
+      <img src="assets/copybook.png" alt="" width="56" height="56" />
       <h1>Procesador de Liquidaciones Tasy</h1>
-      <p>Seleccioná facturas PDF de AFIP, elegí la plantilla Excel Tasy y exportá los datos automáticamente. Sin instalar Python.</p>
+      <p>Facturas PDF AFIP → Excel Tasy. Funciona en el navegador.</p>
     </header>
 
-    <section class="features">
-      <div class="feature">
-        <span>📄</span>
-        <div>
-          <strong>Lectura de PDFs AFIP</strong>
-          <small>Extrae datos de facturas en lote.</small>
+    <p class="privacy">
+      🔒 Todo se procesa en tu computadora. Los PDF y Excel <strong>no se suben</strong> a ningún servidor.
+    </p>
+
+    <div class="layout">
+      <aside class="panel">
+        <div class="card">
+          <h2>📄 Seleccionar PDF</h2>
+          <label class="picker" id="pdf-drop">
+            <input id="pdf-input" type="file" accept=".pdf,application/pdf" multiple />
+            <strong>Agregar facturas PDF</strong>
+            Clic o arrastrá archivos acá
+          </label>
         </div>
-      </div>
-      <div class="feature">
-        <span>📊</span>
-        <div>
-          <strong>Exportación a Excel Tasy</strong>
-          <small>Agrega filas debajo de las existentes, sin borrar datos.</small>
+
+        <div class="card">
+          <h2>📊 Plantilla Excel</h2>
+          <label class="picker solid">
+            <input id="excel-input" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+            <strong>Seleccionar Excel (.xlsx)</strong>
+            Plantilla Tasy con encabezados
+          </label>
+          <p class="excel-name" id="excel-label">Ningún Excel seleccionado</p>
         </div>
-      </div>
-      <div class="feature">
-        <span>🖥️</span>
-        <div>
-          <strong>Windows y Linux</strong>
-          <small>Ejecutable standalone, listo para usar.</small>
+      </aside>
+
+      <section class="panel">
+        <div class="card list-card">
+          <div class="list-header">
+            <h2>PDF seleccionados</h2>
+            <span id="pdf-count">Ningún PDF seleccionado</span>
+          </div>
+          <ul id="pdf-list"></ul>
         </div>
-      </div>
-    </section>
 
-    <section class="downloads">
-      <article class="card">
-        <h2>Windows</h2>
-        <p>Descargá el .exe y ejecutalo con doble clic.</p>
-        <a class="btn" href="https://drive.google.com/uc?export=download&id=127v_pppeyaxCbjXH0xEC4rypBrrvmykY">
-          Descargar para Windows
-        </a>
-        <p class="note">Si Google advierte, elegí <strong>Descargar de todos modos</strong>.</p>
-      </article>
+        <button type="button" class="process-btn" id="process-btn" disabled>
+          Procesar y descargar Excel
+        </button>
 
-      <article class="card">
-        <h2>Linux</h2>
-        <p>Binario de 64 bits (Ubuntu/Debian/Fedora).</p>
-        <a class="btn secondary" id="linux-download" href="https://github.com/FelixAyram/procesador-liquidaciones-tasy/releases/latest/download/ProcesadorLiquidacionesTasy-Linux">
-          Descargar para Linux
-        </a>
-        <p class="note">Requiere escritorio gráfico (Tkinter).</p>
-      </article>
-    </section>
-
-    <section class="steps">
-      <h3>Linux — primer uso</h3>
-      <ol>
-        <li>Descargá el archivo y abrí una terminal en esa carpeta.</li>
-        <li>Dale permiso de ejecución: <code>chmod +x ProcesadorLiquidacionesTasy-Linux</code></li>
-        <li>Ejecutá: <code>./ProcesadorLiquidacionesTasy-Linux</code></li>
-      </ol>
-    </section>
-
-    <footer class="footer">
-      <p>created by <a href="mailto:felixayram33@gmail.com">@felixayram33@gmail.com</a></p>
-      <p><a href="https://github.com/FelixAyram/procesador-liquidaciones-tasy">Código fuente en GitHub</a></p>
-    </footer>
+        <footer>
+          <span id="status">Listo para procesar</span>
+          <a href="mailto:felixayram33@gmail.com">@felixayram33@gmail.com</a>
+        </footer>
+      </section>
+    </div>
   </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
