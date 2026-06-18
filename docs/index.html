@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Procesador de Liquidaciones Tasy</title>
-  <meta name="description" content="Procesá facturas PDF AFIP y exportá al Excel Tasy. Todo en tu navegador, sin servidor." />
+  <meta name="description" content="Procesá facturas PDF AFIP y exportá al Excel Tasy. Procesamiento local en tu navegador: tus archivos no se envían a ningún servidor." />
   <link rel="icon" href="assets/copybook.png" type="image/png" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -58,19 +58,38 @@
     }
 
     .privacy {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
       margin: 16px auto 24px;
-      max-width: 560px;
-      padding: 10px 16px;
-      background: rgba(34, 165, 91, 0.12);
-      border: 1px solid rgba(34, 165, 91, 0.35);
+      max-width: 640px;
+      padding: 16px 18px;
+      background: rgba(34, 165, 91, 0.08);
+      border: 1px solid rgba(34, 165, 91, 0.28);
       border-radius: 12px;
-      font-size: 0.85rem;
-      color: #3dd68c;
+      font-size: 0.84rem;
+      color: #cbd5e1;
+      line-height: 1.55;
     }
+
+    .privacy strong {
+      display: block;
+      color: #3dd68c;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    .privacy ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .privacy li { margin-bottom: 4px; }
+
+    .privacy a {
+      color: #8b95a8;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .privacy a:hover { color: #cbd5e1; }
 
     .layout {
       display: grid;
@@ -283,12 +302,17 @@
     <header>
       <img src="assets/copybook.png" alt="" width="56" height="56" />
       <h1>Procesador de Liquidaciones Tasy</h1>
-      <p>Facturas PDF AFIP → Excel Tasy. Funciona en el navegador.</p>
+      <p>Extraé datos de facturas AFIP y generá el Excel para Tasy, directo desde el navegador.</p>
     </header>
 
-    <p class="privacy">
-      🔒 Todo se procesa en tu computadora. Los PDF y Excel <strong>no se suben</strong> a ningún servidor.
-    </p>
+    <div class="privacy">
+      <strong>Privacidad y funcionamiento</strong>
+      <ul>
+        <li>Tus PDF y tu plantilla Excel se procesan <strong>solo en tu dispositivo</strong>.</li>
+        <li><strong>No se suben</strong> a servidores ni se guardan en la nube.</li>
+        <li>El resultado se descarga en tu PC; podés revisar el <a href="https://github.com/FelixAyram/procesador-liquidaciones-tasy" target="_blank" rel="noopener">código fuente</a> en GitHub.</li>
+      </ul>
+    </div>
 
     <div class="layout">
       <aside class="panel">
@@ -296,8 +320,8 @@
           <h2>📄 Seleccionar PDF</h2>
           <label class="picker" id="pdf-drop">
             <input id="pdf-input" type="file" accept=".pdf,application/pdf" multiple />
-            <strong>Agregar facturas PDF</strong>
-            Clic o arrastrá archivos acá
+            <strong>Seleccionar facturas PDF</strong>
+            Podés elegir varios archivos a la vez
           </label>
         </div>
 
@@ -305,10 +329,10 @@
           <h2>📊 Plantilla Excel</h2>
           <label class="picker solid">
             <input id="excel-input" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
-            <strong>Seleccionar Excel (.xlsx)</strong>
-            Plantilla Tasy con encabezados
+            <strong>Seleccionar plantilla Excel (.xlsx)</strong>
+            Usá tu archivo Tasy con los encabezados de columnas
           </label>
-          <p class="excel-name" id="excel-label">Ningún Excel seleccionado</p>
+          <p class="excel-name" id="excel-label">Sin plantilla seleccionada</p>
         </div>
       </aside>
 
@@ -316,17 +340,17 @@
         <div class="card list-card">
           <div class="list-header">
             <h2>PDF seleccionados</h2>
-            <span id="pdf-count">Ningún PDF seleccionado</span>
+            <span id="pdf-count">Sin archivos cargados</span>
           </div>
           <ul id="pdf-list"></ul>
         </div>
 
         <button type="button" class="process-btn" id="process-btn" disabled>
-          Procesar y descargar Excel
+          Procesar facturas y descargar Excel
         </button>
 
         <footer>
-          <span id="status">Listo para procesar</span>
+          <span id="status">Esperando archivos para procesar</span>
           <a href="mailto:felixayram33@gmail.com">@felixayram33@gmail.com</a>
         </footer>
       </section>
@@ -335,6 +359,6 @@
 
   <div class="toast" id="toast" role="status"></div>
 
-  <script type="module" src="js/main.js?v=3"></script>
+  <script type="module" src="js/main.js?v=4"></script>
 </body>
 </html>

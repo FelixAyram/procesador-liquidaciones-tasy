@@ -1,4 +1,4 @@
-import { readPdfText, extractInvoiceData } from "./pdf-parser.js?v=3";
+import { readPdfText, extractInvoiceData } from "./pdf-parser.js?v=4";
 import { writeRowsToExcel } from "./excel-export.js";
 import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/build/pdf.mjs";
 import ExcelJS from "https://cdn.jsdelivr.net/npm/exceljs@4.4.0/+esm";
@@ -27,10 +27,10 @@ function showToast(message, type = "info") {
 
 function updateStatus() {
   const n = pdfFiles.length;
-  if (n === 0) statusEl.textContent = "Listo para procesar";
-  else if (n === 1) statusEl.textContent = "Listo: 1 PDF cargado";
-  else statusEl.textContent = `Listo: ${n} PDFs cargados`;
-  pdfCount.textContent = n === 0 ? "Ningún PDF seleccionado" : `${n} archivo(s)`;
+  if (n === 0) statusEl.textContent = "Esperando archivos para procesar";
+  else if (n === 1) statusEl.textContent = "1 factura cargada en tu navegador";
+  else statusEl.textContent = `${n} facturas cargadas en tu navegador`;
+  pdfCount.textContent = n === 0 ? "Sin archivos cargados" : `${n} archivo(s)`;
   processBtn.disabled = n === 0 || !excelFile;
 }
 
@@ -39,7 +39,7 @@ function renderPdfList() {
   if (pdfFiles.length === 0) {
     const empty = document.createElement("li");
     empty.className = "empty";
-    empty.textContent = "Agregá facturas PDF desde el panel izquierdo";
+    empty.textContent = "Todavía no hay facturas. Seleccioná o arrastrá PDFs desde el panel izquierdo.";
     pdfList.appendChild(empty);
     return;
   }
@@ -116,8 +116,8 @@ processBtn.addEventListener("click", async () => {
   if (!pdfFiles.length || !excelFile) return;
 
   processBtn.disabled = true;
-  processBtn.textContent = "Procesando…";
-  statusEl.textContent = "Extrayendo datos de los PDF…";
+  processBtn.textContent = "Procesando en tu navegador…";
+  statusEl.textContent = "Leyendo facturas PDF (sin enviar datos a internet)…";
 
   const extractedRows = [];
   const errors = [];
@@ -143,7 +143,7 @@ processBtn.addEventListener("click", async () => {
       return;
     }
 
-    statusEl.textContent = "Generando Excel…";
+    statusEl.textContent = "Armando el archivo Excel…";
     const templateBuffer = await excelFile.arrayBuffer();
     const outputBuffer = await writeRowsToExcel(templateBuffer, extractedRows, ExcelJS);
 
@@ -161,10 +161,10 @@ processBtn.addEventListener("click", async () => {
     a.click();
     URL.revokeObjectURL(url);
 
-    let msg = `Exportados ${extractedRows.length} registro(s).`;
+    let msg = `Listo: ${extractedRows.length} factura(s) exportada(s) a tu descargas.`;
     if (errors.length) msg += ` ${errors.length} advertencia(s).`;
     showToast(msg, errors.length ? "warn" : "success");
-    statusEl.textContent = `Completado · ${extractedRows.length} registro(s) exportado(s)`;
+    statusEl.textContent = `Completado · ${extractedRows.length} factura(s) procesada(s) localmente`;
 
     if (errors.length) console.warn("Advertencias:", errors);
   } catch (err) {
@@ -172,7 +172,7 @@ processBtn.addEventListener("click", async () => {
     statusEl.textContent = "Error al procesar";
     console.error(err);
   } finally {
-    processBtn.textContent = "Procesar y descargar Excel";
+    processBtn.textContent = "Procesar facturas y descargar Excel";
     updateStatus();
   }
 });
