@@ -1,5 +1,6 @@
 import { readPdfText, extractInvoiceData } from "./pdf-parser.js?v=6";
 import { writeRowsToExcel } from "./excel-export.js";
+import { updateGuideStep } from "./guide.js";
 import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/build/pdf.mjs";
 import ExcelJS from "https://cdn.jsdelivr.net/npm/exceljs@4.4.0/+esm";
 
@@ -32,6 +33,7 @@ function updateStatus() {
   else statusEl.textContent = `${n} facturas cargadas en tu navegador`;
   pdfCount.textContent = n === 0 ? "Sin archivos cargados" : `${n} archivo(s)`;
   processBtn.disabled = n === 0 || !excelFile;
+  updateGuideStep(n, !!excelFile);
 }
 
 function renderPdfList() {
@@ -118,6 +120,7 @@ processBtn.addEventListener("click", async () => {
   processBtn.disabled = true;
   processBtn.textContent = "Procesando en tu navegador…";
   statusEl.textContent = "Leyendo facturas PDF (sin enviar datos a internet)…";
+  updateGuideStep(pdfFiles.length, !!excelFile, true);
 
   const extractedRows = [];
   const errors = [];
